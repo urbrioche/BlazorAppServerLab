@@ -82,6 +82,8 @@
     private async Task Delete(MyNote noteItem)
     {
         await MyNoteService.DeleteAsync(noteItem);
+        Notes = await MyNoteService.RetrieveAsync();
+        StateHasChanged();
     }
 
     private void Add()

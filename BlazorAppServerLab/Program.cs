@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using BlazorAppServerLab.Data;
+using BlazorAppServerLab.Models;
 using BlazorAppServerLab.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<IMyNoteService, MyNoteService>();
+builder.Services.AddDbContext<MyNoteDbContext>(options => { options.UseSqlite("Data Source=MyNote.db"); });
 
 var app = builder.Build();
 
@@ -28,4 +31,3 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
-

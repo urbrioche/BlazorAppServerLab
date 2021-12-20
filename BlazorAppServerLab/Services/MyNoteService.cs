@@ -1,42 +1,46 @@
 using BlazorAppServerLab.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorAppServerLab.Services;
 
 public class MyNoteService : IMyNoteService
 {
+    public MyNoteService(MyNoteDbContext myNoteDbContext)
+    {
+        MyNoteDbContext = myNoteDbContext;
+    }
+
+    public MyNoteDbContext MyNoteDbContext { get; }
     public List<MyNote> MyNotes { get; set; }
 
-    public MyNoteService()
+    public async Task CreateAsync(MyNote myNote)
     {
-        MyNotes = new List<MyNote>()
+        await MyNoteDbContext.MyNotes.AddAsync(myNote);
+        await MyNoteDbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(MyNote myNote)
+    {
+        var item = await MyNoteDbContext.MyNotes.FirstOrDefaultAsync(x => x.Id == myNote.Id);
+        if (item != null)
         {
-            new() { Title = "買芭樂", },
-            new() { Title = "買蘋果", },
-            new() { Title = "買西瓜", },
-        };
+            MyNoteDbContext.MyNotes.Remove(item);
+            await MyNoteDbContext.SaveChangesAsync();
+        }
     }
 
-    public Task CreateAsync(MyNote myNote)
+    public async Task<List<MyNote>> RetrieveAsync()
     {
-        MyNotes.Add(myNote);
-
-        return Task.FromResult(0);
+        return await MyNoteDbContext.MyNotes.ToListAsync();
     }
 
-    public Task DeleteAsync(MyNote myNote)
+    public async Task UpdateAsync(MyNote origMyNote, MyNote myNote)
     {
-        MyNotes.Remove(MyNotes.FirstOrDefault(x => x.Title == myNote.Title));
-        return Task.FromResult(0);
-    }
-
-    public Task<List<MyNote>> RetrieveAsync()
-    {
-        return Task.FromResult(MyNotes);
-    }
-
-    public Task UpdateAsync(MyNote origMyNote, MyNote myNote)
-    {
-        MyNotes.FirstOrDefault(x => x.Title == origMyNote.Title).Title = myNote.Title;
-        return Task.FromResult(0);
+        var item = await MyNoteDbContext.MyNotes.FirstOrDefaultAsync(x => x.Id == origMyNote.Id);
+        if (item != null)
+        {
+            item.Title = myNote.Title;
+            await MyNoteDbContext.SaveChangesAsync();
+        }
     }
 }

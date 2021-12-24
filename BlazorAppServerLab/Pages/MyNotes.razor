@@ -5,6 +5,7 @@
 @using System.Data
 @using BlazorAppServerLab.Services
 @using Microsoft.VisualBasic
+@implements IAsyncDisposable
 @inject IMyNoteService MyNoteService
 @inject IJSRuntime JsRuntime
 
@@ -71,6 +72,15 @@
     public bool ShowPopup { get; set; } = false;
     public bool IsNewMode { get; set; }
     public string DialogId { get; set; } = "myModal";
+    private IJSObjectReference _module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./scripts/modalHelper.js");
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -118,11 +128,16 @@
 
     private async Task CloseDialog()
     {
-        await JsRuntime.InvokeVoidAsync("closeModal", DialogId);
+        await _module.InvokeVoidAsync("closeModal", DialogId);
     }
 
     private async Task OpenDialog()
     {
-        await JsRuntime.InvokeVoidAsync("showModal", DialogId);
+        await _module.InvokeVoidAsync("showModal", DialogId);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _module.DisposeAsync();
     }
 }

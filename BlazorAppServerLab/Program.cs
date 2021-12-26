@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using BlazorAppServerLab.Data;
 using BlazorAppServerLab.Models;
 using BlazorAppServerLab.Services;
+using Blazored.Modal;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<IMyNoteService, MyNoteService>();
 builder.Services.AddDbContext<MyNoteDbContext>(options => { options.UseSqlite("Data Source=MyNote.db"); });
+builder.Services.AddBlazoredModal();
 
 var app = builder.Build();
 

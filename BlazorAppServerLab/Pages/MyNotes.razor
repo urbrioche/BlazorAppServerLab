@@ -4,6 +4,8 @@
 @using BlazorAppServerLab.Models
 @using System.Data
 @using BlazorAppServerLab.Services
+@using Blazored.Modal
+@using Blazored.Modal.Services
 @using Microsoft.VisualBasic
 @implements IAsyncDisposable
 @inject IMyNoteService MyNoteService
@@ -74,6 +76,9 @@
     public string DialogId { get; set; } = "myModal";
     private IJSObjectReference _module;
 
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -89,9 +94,21 @@
 
     private async Task Delete(MyNote noteItem)
     {
-        await MyNoteService.DeleteAsync(noteItem);
-        Notes = await MyNoteService.RetrieveAsync();
-        StateHasChanged();
+        var parameters = new ModalParameters();
+        parameters.Add("RecordTitleName", noteItem.Title);
+        var confirmModal = Modal.Show<ConfirmDelete>("確定要刪除嗎？", parameters);
+        var result = await confirmModal.Result;
+        if (result.Cancelled)
+        {
+            Console.WriteLine("Modal was cancelled");
+        }
+        else
+        {
+            Console.WriteLine(result.Data.ToString());
+            await MyNoteService.DeleteAsync(noteItem);
+            Notes = await MyNoteService.RetrieveAsync();
+            StateHasChanged();
+        }
     }
 
     private async Task Add()
@@ -140,4 +157,5 @@
     {
         await _module.DisposeAsync();
     }
+
 }

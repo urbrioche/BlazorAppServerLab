@@ -29,6 +29,7 @@ namespace BlazorAppServerLab.Controllers
         public void Post([FromBody] MyNote myNote)
         {
             _myNoteDbContext.MyNotes.Add(myNote);
+            _myNoteDbContext.SaveChanges();
         }
 
         [HttpPut("{id}")]

@@ -11,20 +11,13 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-// var a = builder.Environment;
-// var b = builder.
-//     var server = builder.Services.GetService<IServer>();
-//
-// var addresses = server?.Features.Get<IServerAddressesFeature>();
-//
-// return addresses?.Addresses ?? Array.Empty<string>();
-// Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 // builder.Services.AddScoped<IMyNoteService, MyNoteService>();
 builder.Services.AddScoped<IMyNoteService, MyNoteWebApiService>();
 builder.Services.AddScoped<MyNotesViewModel>();
+builder.Services.AddScoped<GameViewModel>();
 builder.Services.AddDbContext<MyNoteDbContext>(options => { options.UseSqlite("Data Source=MyNote.db"); });
 builder.Services.AddBlazoredModal();
 builder.Services.AddControllers();

@@ -18,6 +18,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<IMyNoteService, MyNoteWebApiService>();
 builder.Services.AddScoped<MyNotesViewModel>();
 builder.Services.AddScoped<GameViewModel>();
+builder.Services.AddScoped<GameAdvanceViewModel>();
 builder.Services.AddDbContext<MyNoteDbContext>(options => { options.UseSqlite("Data Source=MyNote.db"); });
 builder.Services.AddBlazoredModal();
 builder.Services.AddControllers();
